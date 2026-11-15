@@ -1,10 +1,10 @@
-# AMAZ Production v3.8
+# AMAZ Production v3.8.3
 
 ফ্যাক্টরির প্রোডাকশন, স্টোর (RM/PM), FG, বিক্রয় ও কস্টিং হিসাবের সফটওয়্যার — **AMAZ ERP Solution**।
 
 ## GitHub Pages-এ রাখার নিয়ম (প্রথমবার)
 1. GitHub-এ নতুন Repository খুলুন (যেমন `amaz-production`)। Private রাখতে চাইলে GitHub Pro লাগবে; না হলে Public।
-2. এই ফোল্ডারের **সব ফাইল** আপলোড করুন: `index.html`, `sw.js`, `manifest.webmanifest`, `version.json`, `icon-192.png`, `icon-512.png`, `.nojekyll`
+2. এই ফোল্ডারের **সব ফাইল** আপলোড করুন: `index.html`, `sw.js`, `manifest.webmanifest`, `version.json`, `icon-32.png`, `icon-180.png`, `icon-192.png`, `icon-512.png`, `.nojekyll`
    (Add file → Upload files → সব ফাইল টেনে দিন → Commit changes)।
 3. **Settings → Pages → Source: Deploy from a branch → Branch: `main` / `(root)` → Save**।
 4. ১-২ মিনিট পর লিংক পাবেন: `https://<username>.github.io/amaz-production/`

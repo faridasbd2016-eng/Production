@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AMAZ Production</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='#059669'/%3E%3Cstop offset='1' stop-color='#064e3b'/%3E%3C/linearGradient%3E%3ClinearGradient id='a' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='#fbbf24'/%3E%3Cstop offset='1' stop-color='#f59e0b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' fill='url%28#g%29'/%3E%3Ccircle cx='256' cy='256' r='200' fill='#ffffff' opacity='.06'/%3E%3Cpath d='M120 368 V250 l62 -40 v40 l62 -40 v40 l62 -40 V168 h36 v-30 h28 v230 z' fill='#ecfdf5'/%3E%3Crect x='148' y='290' width='34' height='34' rx='5' fill='#065f46'/%3E%3Crect x='210' y='290' width='34' height='34' rx='5' fill='#065f46'/%3E%3Crect x='272' y='290' width='34' height='34' rx='5' fill='#065f46'/%3E%3Ccircle cx='350' cy='118' r='14' fill='#ecfdf5' opacity='.55'/%3E%3Ccircle cx='372' cy='98' r='10' fill='#ecfdf5' opacity='.35'/%3E%3Cg transform='translate%28352 330%29'%3E%3Cg fill='url%28#a%29'%3E%3Ccircle r='58'/%3E%3Cg id='t'%3E%3Crect x='-13' y='-80' width='26' height='30' rx='5'/%3E%3C/g%3E%3Cuse href='#t' transform='rotate%2845%29'/%3E%3Cuse href='#t' transform='rotate%2890%29'/%3E%3Cuse href='#t' transform='rotate%28135%29'/%3E%3Cuse href='#t' transform='rotate%28180%29'/%3E%3Cuse href='#t' transform='rotate%28225%29'/%3E%3Cuse href='#t' transform='rotate%28270%29'/%3E%3Cuse href='#t' transform='rotate%28315%29'/%3E%3C/g%3E%3Ccircle r='24' fill='#064e3b'/%3E%3C/g%3E%3Crect x='104' y='366' width='186' height='14' rx='7' fill='#fbbf24'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#065f46">
 <script>try{var _t=localStorage.getItem('amazProd_theme');if(_t==='dark'||(_t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
 <style>
 :root{--g:#065f46;--g2:#047857;--g3:#d1fae5;--a:#f59e0b;--a2:#fef3c7;--bg:#f1f5f9;--card:#fff;--bd:#e2e8f0;--tx:#0f172a;--mut:#64748b;--red:#dc2626;--red2:#fee2e2;--blu:#2563eb}
@@ -448,10 +450,11 @@ window.addEventListener('unhandledrejection',e=>{const r=e&&e.reason;const m=r&&
 try{new PerformanceObserver(l=>l.getEntries().forEach(x=>{if(x.duration>2500)errLog('অনেক সময় আটকে ছিল: '+Math.round(x.duration)+' ms','', 'slow')})).observe({entryTypes:['longtask']})}catch(e){}
 /* ================= কনফিগ ================= */
 const KEY='amazProd_v1';
-const APP_VER='3.8.2';
+const APP_VER='3.8.3';
 const SECTIONS=['Export','Morning','Ghorer Ponno','Depo'];
 const SEC_BN={'Export':'এক্সপোর্ট','Morning':'মর্নিং','Ghorer Ponno':'ঘরের পণ্য','Depo':'ডিপো'};
 const CHANGELOG=[
+ {v:'3.8.3',d:'2026-11-15',items:['নতুন সফটওয়্যার আইকন (ফ্যাক্টরি + গিয়ার) — ব্রাউজার ট্যাব, ইনস্টল করা অ্যাপ ও মোবাইল হোম স্ক্রিনে']},
  {v:'3.8.2',d:'2026-11-15',items:[
   'মিক্স: অনেকগুলো আইটেম মিলে একটা আইটেম — ভাঙানোর সূত্রে ও ভাঙানো এন্ট্রিতে "+ উপাদান যোগ" দিয়ে যত খুশি উপাদান যোগ/বাদ দেওয়া যায়; এন্ট্রি দিলে সব উপাদানের স্টক কমে, তৈরি আইটেমের স্টক বাড়ে, গড় দামও সব উপাদান মিলিয়ে বসে',
   'সূত্র এডিট পপআপে উপাদানগুলোও বদলানো যায়'
@@ -5722,7 +5725,7 @@ function updShow(j){let b=$('#updBar');if(!b){b=document.createElement('div');b.
  b.innerHTML=`<span>🆕 নতুন ভার্সন <b>v${esc(j.version)}</b> এসেছে${j.notes?' — '+esc(j.notes):''}</span><button class="btn sm amb" onclick="updNow()">এখনই আপডেট</button><button class="btn sm" style="background:transparent;color:#d1fae5;border-color:#3f7a55" onclick="updLater('${esc(j.version)}')">পরে</button>`;b.style.display='flex'}
 function updLater(v){try{localStorage.setItem(UPD_KEY,v)}catch(e){}const b=$('#updBar');if(b)b.style.display='none'}
 async function updNow(){if(VDIRTY&&!await ask('এই পেজে সেভ না করা লেখা আছে — আপডেট করলে তা হারাবে। এখনই আপডেট করবেন?'))return;const g=()=>location.reload();try{if(navigator.serviceWorker){navigator.serviceWorker.getRegistration().then(r=>{if(r&&r.update)r.update().then(g,g);else g()},g);return}}catch(e){}g()}
-(function pwaInit(){if(!/^https?:$/.test(location.protocol))return;try{const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l)}catch(e){}
+(function pwaInit(){if(!/^https?:$/.test(location.protocol))return;try{const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);const ap=document.createElement('link');ap.rel='apple-touch-icon';ap.href='icon-180.png';document.head.appendChild(ap);const fi=document.createElement('link');fi.rel='icon';fi.type='image/png';fi.sizes='32x32';fi.href='icon-32.png';document.head.appendChild(fi)}catch(e){}
  try{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}setTimeout(updCheck,8000);setInterval(updCheck,30*60*1000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')updCheck()})})();
 setInterval(()=>{try{licRefresh()}catch(e){}},30*60*1000);
 
