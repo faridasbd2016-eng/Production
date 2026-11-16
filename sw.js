@@ -1,7 +1,7 @@
 /* AMAZ Production — Service Worker
    নতুন ভার্সন GitHub-এ দিলে CACHE নাম বদলানোর দরকার নেই:
    index.html ও version.json সবসময় আগে নেট থেকে আনে (নেট না থাকলে ক্যাশ থেকে চলে)। */
-const CACHE = 'amaz-production-v5';
+const CACHE = 'amaz-production-v6';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
