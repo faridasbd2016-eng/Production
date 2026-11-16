@@ -209,6 +209,8 @@ body.ro [data-key=save],body.ro [data-key=new],body.ro .btn.red,body.ro .btn.amb
 .psig div{border-top:1px solid #000;width:22%;text-align:center;padding-top:3px}
 .psum{display:flex;gap:6px;margin:6px 0}.psum div{flex:1;border:1px solid #000;padding:3px 5px;font-size:10.5px}
 .rep{background:#fff;font-family:"Times New Roman",Times,serif}
+/* v3.9.2 — প্রিন্টে পাতা ভাগ: টেবিলের সারি মাঝখান থেকে কাটে না, প্রতি পাতায় কলাম হেডার আবার আসে, শিরোনাম/সেকশন একা নিচে পড়ে থাকে না, স্বাক্ষর ভাগ হয় না */
+#print thead{display:table-header-group}#print tfoot{display:table-footer-group}#print tr,#print .psig,#print .psum,#print .pinfo,#print img{break-inside:avoid;page-break-inside:avoid}#print .ph,#print h2,#print h3,#print h4,#print tr.sech,#print tr.grp{break-after:avoid;page-break-after:avoid}#print .psig{break-before:avoid;page-break-before:avoid}#print table{break-inside:auto}
 @media(max-width:800px){#side{width:58px}#side .brand span,#side .ng,#side a .lb{display:none}.grid4{grid-template-columns:1fr 1fr}}
 .licBan{display:none;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:10px 14px;border-radius:10px;background:#fef3c7;border:1px solid #f59e0b;color:#78350f;font-size:13px}.licBan.bad{background:#fee2e2;border-color:#ef4444;color:#7f1d1d}@media print{.licBan,#undoBar,#updBar{display:none!important}}
 
@@ -450,10 +452,16 @@ window.addEventListener('unhandledrejection',e=>{const r=e&&e.reason;const m=r&&
 try{new PerformanceObserver(l=>l.getEntries().forEach(x=>{if(x.duration>2500)errLog('অনেক সময় আটকে ছিল: '+Math.round(x.duration)+' ms','', 'slow')})).observe({entryTypes:['longtask']})}catch(e){}
 /* ================= কনফিগ ================= */
 const KEY='amazProd_v1';
-const APP_VER='3.9.1';
+const APP_VER='3.9.2';
 const SECTIONS=['Export','Morning','Ghorer Ponno','Depo'];
 const SEC_BN={'Export':'এক্সপোর্ট','Morning':'মর্নিং','Ghorer Ponno':'ঘরের পণ্য','Depo':'ডিপো'};
 const CHANGELOG=[
+ {v:'3.9.2',d:'2026-11-16',items:[
+  'সব প্রিন্টের পাশে ⬇️ PDF বাটন — রিপোর্ট, ভাউচার, ইনভয়েস, চালান, স্টেটমেন্ট, লেবেল সব; একই প্রিন্ট লেআউট সরাসরি PDF ফাইল (PC-তে ডাউনলোড, মোবাইলে WhatsApp/Email শেয়ার); টেবিলের সারি মাঝখান থেকে কাটে না; প্রতি পাতায় Page x of y',
+  'বাগ ফিক্স: চেকবক্স টিক / সেভ / ফিল্টার করলে পেজ বা ভেতরের লিস্ট উপরে চলে যেত (যেমন Visibility Control, রোলের অনুমতি) — এখন যেখানে ছিলেন সেখানেই থাকে',
+  'প্রিন্ট ও PDF দুটোতেই পাতা ভাগ ঠিক: সারি মাঝখান থেকে কাটে না, প্রতি পাতায় কলাম হেডার আবার আসে, শিরোনাম বা সেকশন একা পাতার নিচে পড়ে থাকে না, স্বাক্ষর ভাগ হয় না; PDF ফাইলের নামে ভাউচার নং (যেমন INV-0001)',
+  'বাগ ফিক্স: ডে বুকের "প্রিন্ট" চাপলে ফাঁকা পাতা আসত — এখন তারিখ/ধরন/সার্চ অনুযায়ী আসল Day Book রিপোর্ট (English) প্রিন্ট ও PDF'
+ ]},
  {v:'3.9.1',d:'2026-11-16',items:[
   'অটো সিঙ্কের সময় কাজ ছেড়ে দেওয়া / স্ক্রিন লাফানো ঠিক: অন্য PC থেকে নতুন ডাটা এলে আপনি টাইপ/ক্লিক/স্ক্রল করার ৮ সেকেন্ড পর্যন্ত, পিকার খোলা থাকলে বা ফর্মে না-সেভ করা লেখা থাকলে পেজ বদলায় না; পরে রিফ্রেশ হলেও স্ক্রল পজিশন ও কার্সর একই জায়গায় থাকে, ফোকাস প্রথম ঘরে লাফায় না',
   'উপরের "নতুন ডাটা এসেছে — রিফ্রেশ" চিপে চাপলে সাথে সাথে রিফ্রেশ'
@@ -1080,7 +1088,7 @@ function ruShow(rows,fromC){RU.rows=rows.filter(r=>r.it&&r.r>0&&Math.abs(r.r-n(r
 function ruApply(){const L=RU.rows.filter(r=>r.on);if(!L.length)return;L.forEach(r=>{audit('আইটেম এডিট (রেট আপডেট)',r.it.code+' '+r.it.name+' · rate: '+n(r.it.rate)+' → '+r.r);r.it.rate=r.r});save();closeModal();toast(L.length+'টি আইটেমের রেট আপডেট হয়েছে');renderView()}
 
 /* ---- ৩. সব প্রিন্ট ইংরেজিতে — স্ক্রিনে বাংলা থাকে, প্রিন্টের আগে অনুবাদ ---- */
-const EN_MAP=[["• RM ও PM-এর % = ঐ সেকশনের প্রোডাকশন মূল্যের উপর; Manpower-এর % = মোট প্রোডাকশন মূল্যের উপর।", "• RM and PM % are on that section's production value; Manpower % is on total production value."], ["সেটআপ মোডের এন্ট্রি — RM/PM খরচ রেসিপি ও মাস্টার রেটে হিসাব করা; স্টোর/FG স্টকে ধরা হয়নি।", "Setup-mode entries — RM/PM cost calculated from recipe at master rate; not posted to store/FG stock."], ["টি প্রোডাক্টের রেসিপি নেই — সেগুলোর RM/PM খরচ ধরা হয়নি, তাই লাভ বেশি দেখাচ্ছে।", " product(s) have no recipe — their RM/PM cost is not included, so profit is overstated."], ["আছে যা কোনো সেকশনে পড়েনি (যে সেকশনে আজ উৎপাদন হয়নি তার শ্রমিক)।", "not allocated to any section (workers of sections with no production today)."], ["অন্যান্য আয় — স্ক্র্যাপ / বাই-প্রোডাক্ট বিক্রয়:", "Other Income — Scrap / By-product Sales:"], ["অবণ্টিত খরচ (যে সেকশনে প্রোডাকশন হয়নি)", "Unallocated Cost (sections with no production)"], ["টি প্রোডাক্ট (ইস্যু করা ম্যাটেরিয়াল)", " product(s) (material issued)"], ["প্ল্যান ছিল কিন্তু উৎপাদন হয়নি —", "Planned but not produced —"], ["স্ট্যান্ডার্ড ম্যাটেরিয়াল খরচ:", "Standard Material Cost:"], ["শ্রমিক ও মজুরি (Labour Cost)", "Labour Cost"], ["ক্রয় (Purchase IN) এন্ট্রি", "Purchase entry"], ["সর্বমোট — প্ল্যান ভ্যালু", "GRAND TOTAL — Plan Value"], ["সেকশনভিত্তিক লাভ-ক্ষতি", "Section-wise Profit & Loss"], ["প্রোডাক্ট এডিট (টেবিল)", "Product edited"], ["• TOTAL-এর Manpower-এ", "• TOTAL Manpower includes"], ["আসল ম্যাটেরিয়াল খরচ:", "Actual Material Cost:"], ["ফিনিশড গুডস (FG) স্টক", "Finished Goods (FG) Stock"], ["কমন (সব সেকশনে বণ্টন)", "Common (all sections)"], ["(কোন সেকশনে কত যাবে)", ""], ["ম্যাটেরিয়াল-ভিত্তিক", "Material-wise"], ["প্রোডাকশন লাভ/ক্ষতি:", "Production Profit/Loss:"], ["প্যাকেজিং (PM) স্টক", "Packaging Material (PM) Stock"], ["মেশিনভিত্তিক সারাংশ", "Machine-wise Summary"], ["আইটেমভিত্তিক সারাংশ", "Item-wise Summary"], ["কাঁচামাল (RM) স্টক", "Raw Material (RM) Stock"], ["আইটেম এডিট (টেবিল)", "Item edited"], ["প্রোডাক্ট-ভিত্তিক", "Product-wise"], ["Actual Material ৳", "Actual Material (Tk)"], ["প্রোডাকশন এন্ট্রি", "Production entry"], ["শ্রমিক হাজিরা সেভ", "Attendance saved"], ["স্ক্র্যাপ বিক্রয়", "Scrap sale"], ["প্রোডাকশন মূল্য:", "Production Value:"], ["মেইনটেন্যান্স লগ", "Maintenance log"], ["সাশ্রয়/ঠিক আছে", "Saving / OK"], ["প্রোডাকশন মূল্য", "Production Value"], ["ব্যাকআপ ডাউনলোড", "Backup downloaded"], ["নিট লাভ/ক্ষতি:", "Net Profit/Loss:"], ["প্ল্যান ভ্যালু", "Plan Value"], ["Loss Value (৳)", "Loss Value (Tk)"], ["Std Material ৳", "Std Material (Tk)"], ["মেয়াদোত্তীর্ণ", "Expired"], ["রিকুইজিশন তৈরি", "Requisition created"], ["রিকুইজিশন এডিট", "Requisition edited"], ["রিকুইজিশন মুছা", "Requisition deleted"], ["প্রোডাকশন এডিট", "Production edited"], ["ভাঙানো এন্ট্রি", "Conversion entry"], ["ভ্যারিয়েন্স:", "Variance:"], ["ক্লোজিং স্টক:", "Closing Stock:"], ["Return (ফেরত)", "Return"], ["বিস্তারিত লগ", "Detailed Log"], ["স্টোর ইস্যু:", "Store Issue:"], ["মোট শ্রম খরচ", "Total Labour Cost"], ["মজুরি (Wage)", "Wage"], ["মোট (টাকায়)", "Total (Tk)"], [" — এক্সপোর্ট", ""], [" — ঘরের পণ্য", ""], ["(লগইন ছাড়া)", "(no login)"], ["অবণ্টিত খরচ", "Unallocated Cost"], ["শ্রমিক (জন)", "Workers"], ["প্ল্যান Qty", "Plan Qty"], ["বিক্রয় Qty", "Sales Qty"], ["দিন আগে শেষ", "days expired"], ["ফেব্রুয়ারি", "February"], ["রেসিপি নেই", "No recipe"], ["লাভ/ক্ষতি:", "Profit/Loss:"], ["শ্রম খরচ %", "Labour %"], ["(সব সেকশন)", "(all sections)"], ["আসল উৎপাদন", "Actual Production"], ["আসল ভ্যালু", "Actual Value"], ["মোট ভ্যালু", "Total Value"], ["Variance ৳", "Variance (Tk)"], ["শীঘ্রই শেষ", "Expiring soon"], ["মেয়াদ নেই", "No expiry"], ["সেপ্টেম্বর", "September"], ["লাভ/ক্ষতি", "Profit/Loss"], ["প্রোডাক্ট", "Product"], [" — মর্নিং", ""], ["এক্সপোর্ট", "Export"], ["ঘরের পণ্য", "Ghorer Ponno"], ["জানুয়ারি", "January"], ["মাস ক্লোজ", "Month closed"], ["বেশি খরচ", "Over Cost"], ["মোট খরচ:", "Total Cost:"], ["OT ঘণ্টা", "OT Hours"], ["বিক্রয়:", "Sales:"], ["দিন বাকি", "days left"], ["ডিসেম্বর", "December"], ["মোট খরচ", "Total Cost"], ["OT টাকা", "OT Amount"], ["অর্জন %", "Achievement %"], ["অগ্রগতি", "Progress"], ["সর্বমোট", "Grand Total"], ["ঠিক আছে", "OK"], ["উপস্থিত", "present"], [" — ডিপো", ""], ["অক্টোবর", "October"], ["নভেম্বর", "November"], ["মর্নিং", "Morning"], ["এপ্রিল", "April"], ["অর্জন", "Achievement"], ["ইউনিট", "Unit"], ["মার্চ", "March"], ["জুলাই", "July"], ["আগস্ট", "August"], ["লগআউট", "Logout"], ["খরচ:", "Cost:"], ["ডিপো", "Depo"], ["লগইন", "Login"], ["আসল", "Actual"], ["মোট", "Total"], ["দিন", "days"], ["কোড", "Code"], ["জুন", "June"], ["কমন", "Common"], ["জন", ""], ["সব", "All"], ["মে", "May"], ["৳", "Tk "]];
+const EN_MAP=[["টি কাঁচামাল/প্যাকেজিং উপকরণ ক্রয় (GRN)"," RM/PM items purchased (GRN)"],["ইনভয়েসের সাথে জমা","Received with invoice"],["ফ্যাক্টরি গুদাম","Factory Store"],["কাঁচামাল ক্রয়","Raw material purchase"],["রিকুইজিশন:","Requisition:"],["চালান নং:","Challan No:"],["স্ট্যাটাস:","Status:"],["টি আইটেম"," items"],["রেসিপি:","Recipe:"],["মাধ্যমে:","Mode:"],["পরিমাণ:","Qty:"],["ড্যামেজ:","Damage:"],["আইটেম:","Items:"],["তৈরি:","Produced:"],["পণ্য:","Products:"],["• RM ও PM-এর % = ঐ সেকশনের প্রোডাকশন মূল্যের উপর; Manpower-এর % = মোট প্রোডাকশন মূল্যের উপর।", "• RM and PM % are on that section's production value; Manpower % is on total production value."], ["সেটআপ মোডের এন্ট্রি — RM/PM খরচ রেসিপি ও মাস্টার রেটে হিসাব করা; স্টোর/FG স্টকে ধরা হয়নি।", "Setup-mode entries — RM/PM cost calculated from recipe at master rate; not posted to store/FG stock."], ["টি প্রোডাক্টের রেসিপি নেই — সেগুলোর RM/PM খরচ ধরা হয়নি, তাই লাভ বেশি দেখাচ্ছে।", " product(s) have no recipe — their RM/PM cost is not included, so profit is overstated."], ["আছে যা কোনো সেকশনে পড়েনি (যে সেকশনে আজ উৎপাদন হয়নি তার শ্রমিক)।", "not allocated to any section (workers of sections with no production today)."], ["অন্যান্য আয় — স্ক্র্যাপ / বাই-প্রোডাক্ট বিক্রয়:", "Other Income — Scrap / By-product Sales:"], ["অবণ্টিত খরচ (যে সেকশনে প্রোডাকশন হয়নি)", "Unallocated Cost (sections with no production)"], ["টি প্রোডাক্ট (ইস্যু করা ম্যাটেরিয়াল)", " product(s) (material issued)"], ["প্ল্যান ছিল কিন্তু উৎপাদন হয়নি —", "Planned but not produced —"], ["স্ট্যান্ডার্ড ম্যাটেরিয়াল খরচ:", "Standard Material Cost:"], ["শ্রমিক ও মজুরি (Labour Cost)", "Labour Cost"], ["ক্রয় (Purchase IN) এন্ট্রি", "Purchase entry"], ["সর্বমোট — প্ল্যান ভ্যালু", "GRAND TOTAL — Plan Value"], ["সেকশনভিত্তিক লাভ-ক্ষতি", "Section-wise Profit & Loss"], ["প্রোডাক্ট এডিট (টেবিল)", "Product edited"], ["• TOTAL-এর Manpower-এ", "• TOTAL Manpower includes"], ["আসল ম্যাটেরিয়াল খরচ:", "Actual Material Cost:"], ["ফিনিশড গুডস (FG) স্টক", "Finished Goods (FG) Stock"], ["কমন (সব সেকশনে বণ্টন)", "Common (all sections)"], ["(কোন সেকশনে কত যাবে)", ""], ["ম্যাটেরিয়াল-ভিত্তিক", "Material-wise"], ["প্রোডাকশন লাভ/ক্ষতি:", "Production Profit/Loss:"], ["প্যাকেজিং (PM) স্টক", "Packaging Material (PM) Stock"], ["মেশিনভিত্তিক সারাংশ", "Machine-wise Summary"], ["আইটেমভিত্তিক সারাংশ", "Item-wise Summary"], ["কাঁচামাল (RM) স্টক", "Raw Material (RM) Stock"], ["আইটেম এডিট (টেবিল)", "Item edited"], ["প্রোডাক্ট-ভিত্তিক", "Product-wise"], ["Actual Material ৳", "Actual Material (Tk)"], ["প্রোডাকশন এন্ট্রি", "Production entry"], ["শ্রমিক হাজিরা সেভ", "Attendance saved"], ["স্ক্র্যাপ বিক্রয়", "Scrap sale"], ["প্রোডাকশন মূল্য:", "Production Value:"], ["মেইনটেন্যান্স লগ", "Maintenance log"], ["সাশ্রয়/ঠিক আছে", "Saving / OK"], ["প্রোডাকশন মূল্য", "Production Value"], ["ব্যাকআপ ডাউনলোড", "Backup downloaded"], ["নিট লাভ/ক্ষতি:", "Net Profit/Loss:"], ["প্ল্যান ভ্যালু", "Plan Value"], ["Loss Value (৳)", "Loss Value (Tk)"], ["Std Material ৳", "Std Material (Tk)"], ["মেয়াদোত্তীর্ণ", "Expired"], ["রিকুইজিশন তৈরি", "Requisition created"], ["রিকুইজিশন এডিট", "Requisition edited"], ["রিকুইজিশন মুছা", "Requisition deleted"], ["প্রোডাকশন এডিট", "Production edited"], ["ভাঙানো এন্ট্রি", "Conversion entry"], ["ভ্যারিয়েন্স:", "Variance:"], ["ক্লোজিং স্টক:", "Closing Stock:"], ["Return (ফেরত)", "Return"], ["বিস্তারিত লগ", "Detailed Log"], ["স্টোর ইস্যু:", "Store Issue:"], ["মোট শ্রম খরচ", "Total Labour Cost"], ["মজুরি (Wage)", "Wage"], ["মোট (টাকায়)", "Total (Tk)"], [" — এক্সপোর্ট", ""], [" — ঘরের পণ্য", ""], ["(লগইন ছাড়া)", "(no login)"], ["অবণ্টিত খরচ", "Unallocated Cost"], ["শ্রমিক (জন)", "Workers"], ["প্ল্যান Qty", "Plan Qty"], ["বিক্রয় Qty", "Sales Qty"], ["দিন আগে শেষ", "days expired"], ["ফেব্রুয়ারি", "February"], ["রেসিপি নেই", "No recipe"], ["লাভ/ক্ষতি:", "Profit/Loss:"], ["শ্রম খরচ %", "Labour %"], ["(সব সেকশন)", "(all sections)"], ["আসল উৎপাদন", "Actual Production"], ["আসল ভ্যালু", "Actual Value"], ["মোট ভ্যালু", "Total Value"], ["Variance ৳", "Variance (Tk)"], ["শীঘ্রই শেষ", "Expiring soon"], ["মেয়াদ নেই", "No expiry"], ["সেপ্টেম্বর", "September"], ["লাভ/ক্ষতি", "Profit/Loss"], ["প্রোডাক্ট", "Product"], [" — মর্নিং", ""], ["এক্সপোর্ট", "Export"], ["ঘরের পণ্য", "Ghorer Ponno"], ["জানুয়ারি", "January"], ["মাস ক্লোজ", "Month closed"], ["বেশি খরচ", "Over Cost"], ["মোট খরচ:", "Total Cost:"], ["OT ঘণ্টা", "OT Hours"], ["বিক্রয়:", "Sales:"], ["দিন বাকি", "days left"], ["ডিসেম্বর", "December"], ["মোট খরচ", "Total Cost"], ["OT টাকা", "OT Amount"], ["অর্জন %", "Achievement %"], ["অগ্রগতি", "Progress"], ["সর্বমোট", "Grand Total"], ["ঠিক আছে", "OK"], ["উপস্থিত", "present"], [" — ডিপো", ""], ["অক্টোবর", "October"], ["নভেম্বর", "November"], ["মর্নিং", "Morning"], ["এপ্রিল", "April"], ["অর্জন", "Achievement"], ["ইউনিট", "Unit"], ["মার্চ", "March"], ["জুলাই", "July"], ["আগস্ট", "August"], ["লগআউট", "Logout"], ["খরচ:", "Cost:"], ["ডিপো", "Depo"], ["লগইন", "Login"], ["আসল", "Actual"], ["মোট", "Total"], ["দিন", "days"], ["কোড", "Code"], ["জুন", "June"], ["কমন", "Common"], ["জন", ""], ["সব", "All"], ["মে", "May"], ["৳", "Tk "]];
 const BN_RE=/[\u0980-\u09FF]/;
 function toEN(h){const t=document.createElement('div');t.innerHTML=h;t.querySelectorAll('.ps,.sm2.bn').forEach(e=>{if(BN_RE.test(e.textContent))e.remove()});
  const w=document.createTreeWalker(t,NodeFilter.SHOW_TEXT);const L=[];while(w.nextNode())L.push(w.currentNode);
@@ -1193,7 +1201,7 @@ const NAV=[['g','মূল','main'],['dash','ড্যাশবোর্ড','ho
 let NAVC={};try{NAVC=JSON.parse(localStorage.getItem('amazProd_navc')||'{}')||{}}catch(e){NAVC={}}
 function navToggle(k){NAVC[k]=!NAVC[k];try{localStorage.setItem('amazProd_navc',JSON.stringify(NAVC))}catch(e){}renderNav()}
 let VIEW='dash';
-function go(v){if(SY.pendingRender){SY.pendingRender=false;syStatus('ok')}if(!canView(v)){toast('এই পেজে আপনার অনুমতি নেই',1);return}if(modalOpen())closeModal();VIEW=v;pkClose();renderNav();renderView();$('#view').scrollTop=0}
+function go(v){if(SY.pendingRender){SY.pendingRender=false;syStatus('ok')}if(!canView(v)){toast('এই পেজে আপনার অনুমতি নেই',1);return}if(modalOpen())closeModal();VIEW=v;_vLast='';pkClose();renderNav();renderView();$('#view').scrollTop=0}
 let NAVQ='';
 function sideMini(){const m=$('#side').classList.toggle('mini');try{localStorage.setItem('amazProd_mini',m?'1':'0')}catch(e){}}
 function navLbl(x){return (window.LANG==='en'&&NAV_EN[x[1]])?NAV_EN[x[1]]:x[1]}
@@ -1208,7 +1216,10 @@ function _renderNav(){if(NAVQ.trim()){const q=NAVQ.trim().toLowerCase();let g=nu
  $('#nav').innerHTML=vis.map(x=>{if(x[0]==='g'){g=x[2];const c=!!NAVC[g]&&g!==cur;const lb=(window.LANG==='en'&&NAV_EN[x[1]])?NAV_EN[x[1]]:x[1];return `<button type="button" class="ng ${c?'shut':''}" onclick="navToggle('${g}')" title="${c?'খুলুন':'গুটিয়ে রাখুন'}" tabindex="-1"><span>${lb}</span><svg class="chev" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>`}
   const lb=(window.LANG==='en'&&NAV_EN[x[1]])?NAV_EN[x[1]]:x[1];
   return `<button type="button" class="nl ${VW===x[0]?'on':''} ${NAVC[g]&&g!==cur?'gh':''}" onclick="go('${x[0]}')" title="${lb}">${ic(x[2],17)}<span class="lb">${lb}</span>${x[3]?`<span class="stp">${x[3]}</span>`:''}</button>`}).join('')}
-function V(h){VDIRTY=false;$('#view').innerHTML=h}
+/* v3.9.2 — একই পেজ আবার আঁকা হলে (চেকবক্স টিক, সেভ, ফিল্টার) পেজের ও ভেতরের টেবিলের স্ক্রল যেখানে ছিল সেখানেই থাকে — উপরে লাফায় না */
+var _vLast='';
+function V(h){VDIRTY=false;const v=$('#view');let keep=null;if(_vLast===VIEW){const sc=[...v.querySelectorAll('.tw,[style*="overflow"]')].map(e=>e.scrollTop);keep={y:v.scrollTop,sc}}_vLast=VIEW;v.innerHTML=h;
+ if(keep){const back=()=>{if(_vLast!==VIEW)return;if(Math.abs(v.scrollTop-keep.y)>2)v.scrollTop=keep.y;const L=[...v.querySelectorAll('.tw,[style*="overflow"]')];keep.sc.forEach((t,i)=>{if(t&&L[i]&&L[i].scrollTop!==t)L[i].scrollTop=t})};back();setTimeout(back,0);requestAnimationFrame(back)}}
 function renderView(){try{_renderView()}catch(e){errLog(e.message,e.stack);try{console.error(e)}catch(_){}try{V(`<div class="card" style="border-left:4px solid var(--red)"><h3 class="neg">⚠ এই পেজ খুলতে সমস্যা হয়েছে</h3><div class="hint" style="font-family:monospace">${esc(e.message)}</div><div class="btns" style="margin-top:10px"><button class="btn pri" onclick="go('dash')">ড্যাশবোর্ডে যান</button><button class="btn" onclick="location.reload()">রিলোড</button><button class="btn" onclick="STtab='errlog';go('backup')">Error Log দেখুন</button></div><div class="hint">এই লেখাটার স্ক্রিনশট পাঠালে দ্রুত ঠিক করা যাবে। অন্য সব পেজ স্বাভাবিকভাবে চলবে।</div></div>`)}catch(_){}}}
 function _renderView(){if(!canView(VIEW)&&VIEW!=='dash')VIEW='dash';applySections();easyChip();try{notifyRender()}catch(e){};const nv=NAV.find(x=>x[0]===VIEW);const rawTitle=nv?nv[1]:'';$('#title').textContent=(window.LANG==='en'&&NAV_EN[rawTitle])?NAV_EN[rawTitle]:rawTitle;$('#topCo').textContent=DB.settings.company||'';{const sg=navGroupOf(VIEW);$('#subT').textContent=sg;$('#subDot').style.display=sg&&DB.settings.company?'':'none'}VIEWS[VIEW]();afterRender()}
 function dashFilter(){if(VIEW!=='dash')return;$$('#view [data-dk]').forEach(e=>{if(visHid('dash',e.dataset.dk))e.remove()});if(!CUR||!DB.users.length)return;const o=roleOf(CUR.role);if(!Array.isArray(o.dash))return;$$('#view [data-dk]').forEach(e=>{if(!o.dash.includes(e.dataset.dk))e.remove()})}
@@ -3851,6 +3862,61 @@ function visCard(){const en=window.LANG==='en';if(!isAdmin())return `<div class=
  <h3 style="font-size:14px;margin-top:14px">📊 ${LG('ড্যাশবোর্ডের অংশ','Dashboard Parts')}</h3><div class="tw"><table class="tbl pmx"><thead><tr><th>${LG('অংশ','Part')}</th><th class="rc">${grpBtn('dash',DKS.map(d=>d[0]))}</th></tr></thead><tbody>${DKS.map(d=>row('dash',d[0],esc(d[1]))).join('')}</tbody></table></div></div></div></div>`}
 document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&(e.key==='U'||e.key==='u')){if(DB.users.length&&!CUR)return;e.preventDefault();e.stopPropagation();if(_visUn)visLock();else{STtab='vis';if(VIEW!=='backup')go('backup');else renderView();visUnlock()}}},true);
 
+/* ================= v3.9.2 — সব প্রিন্টের পাশে ⬇️ PDF (Worker Supply / Visa Renewal-এর মতো) =================
+   প্রতিটা প্রিন্ট বাটনের পাশে নিজে থেকে "⬇️ PDF" বাটন বসে। চাপলে একই প্রিন্ট লেআউট সরাসরি PDF ফাইল হয়ে
+   PC-তে ডাউনলোড হয়, মোবাইলে Share মেনু খোলে (WhatsApp/Email)। লাইব্রেরি প্রথমবার ইন্টারনেট থেকে আসে (cdnjs);
+   নেট না থাকলে প্রিন্ট ডায়ালগ খুলে "Save as PDF" বাছতে বলে। */
+var _pdfNext=0,_pdfBusy=false;
+var PDF_LIBS=['https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'],_libP={};
+function loadScriptOnce(url){if(_libP[url])return _libP[url];return(_libP[url]=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src=url;sc.async=true;sc.onload=()=>res();sc.onerror=()=>{delete _libP[url];sc.remove();rej(new Error('load '+url))};document.head.appendChild(sc)}))}
+function pdfProg(t){let el=document.getElementById('pdfProg');if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='pdfProg';el.style.cssText='position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:99999;background:#064e3b;color:#fff;padding:9px 18px;border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35);pointer-events:none';document.body.appendChild(el)}el.textContent='⏳ '+t}
+function pdfIsPrintBtn(b){if(!b||b.tagName!=='BUTTON'||b.classList.contains('pdfB')||b.dataset.nopdf!=null)return false;if(b.closest('#nav,#side,#top,.sttabs,.subtabs'))return false;const oc=b.getAttribute('onclick')||'';if(/^\s*(closeModal|go)\(/.test(oc)&&!/print|Print|prn/i.test(oc))return false;
+ return b.innerHTML.indexOf('M6 9V3h12v6')>=0||/প্রিন্ট|🖨|\bPrint\b/i.test(b.textContent||'')}
+function addPdfButtons(root){try{(root||document).querySelectorAll('#view button, #mbox button').forEach(b=>{if(b.dataset.pdfdone){const nx=b.nextElementSibling;if(nx&&nx.classList.contains('pdfB')&&nx.disabled!==b.disabled)nx.disabled=b.disabled;return}if(!pdfIsPrintBtn(b))return;b.dataset.pdfdone='1';const nx=b.nextElementSibling;if(nx&&nx.classList.contains('pdfB'))return;
+  const p=document.createElement('button');p.type='button';p.className='btn pdfB'+(b.classList.contains('sm')?' sm':'');p.dataset.key='print';p.title=LG('PDF ফাইল ডাউনলোড (মোবাইলে WhatsApp/Email-এ শেয়ার)','Download PDF file (share to WhatsApp/Email on mobile)');const ico=(b.textContent||'').trim().length<=3;p.textContent=ico?'⬇️':'⬇️ PDF';if(b.title)p.title=b.title+' — PDF';p.style.cssText='color:#b91c1c;font-weight:700'+(b.style.fontSize?';font-size:'+b.style.fontSize:'');
+  p.disabled=b.disabled;p.onclick=e=>{e.preventDefault();e.stopPropagation();pdfGo(b)};b.insertAdjacentElement('afterend',p);b.insertAdjacentText('afterend',' ')})}catch(e){}}
+function pdfGo(btn){if(btn.disabled||!btn.isConnected)return;if(_pdfBusy){toast(LG('PDF তৈরি হচ্ছে — একটু অপেক্ষা করুন','Creating PDF — please wait'));return}_pdfNext=Date.now();btn.click();setTimeout(()=>{if(_pdfNext&&Date.now()-_pdfNext>=2400)_pdfNext=0},2500)}
+function pdfPageSpec(){const t=($('#pageStyle')&&$('#pageStyle').textContent)||'';let W=210,H=297;const m=t.match(/size:\s*([^;]+);/);if(m){const s=m[1].trim();const mm=s.match(/([\d.]+)mm\s+([\d.]+)mm/);if(mm){W=+mm[1];H=+mm[2]}else if(/landscape/i.test(s)){W=297;H=210}}
+ let M=[8,8,11,8];const mg=t.match(/margin:\s*([^;}]+)[;}]/);if(mg){const v=mg[1].trim().split(/\s+/).map(x=>parseFloat(x)||0);M=v.length===1?[v[0],v[0],v[0],v[0]]:v.length===2?[v[0],v[1],v[0],v[1]]:v.length===3?[v[0],v[1],v[2],v[1]]:v}return{W,H,M}}
+async function pdfFromPrint(){const pr=$('#print');if(!pr||!pr.innerHTML.trim()){toast(LG('PDF বানানোর কিছু নেই','Nothing to make a PDF of'),1);return}_pdfBusy=true;const sp=pdfPageSpec();
+ const title=((pr.querySelector('.ph .pt')||{}).textContent||(pr.querySelector('h1,h2,h3')||{}).textContent||'AMAZ_Production').trim();
+ const old=pr.getAttribute('style')||'';try{pdfProg(LG('PDF তৈরি হচ্ছে…','Creating PDF…'));for(const u of PDF_LIBS)await loadScriptOnce(u)}catch(e){_pdfBusy=false;pdfProg();toast('⚠️ '+LG('PDF লাইব্রেরি লোড হয়নি (প্রথমবার ইন্টারনেট লাগে) — প্রিন্ট ডায়ালগে "Save as PDF" বাছুন','PDF library did not load (internet is needed the first time) — choose "Save as PDF" in the print dialog'),1);setTimeout(()=>window.print(),300);return}
+ try{const jsPDF=window.jspdf&&window.jspdf.jsPDF;if(!jsPDF||!window.html2canvas)throw new Error('lib');
+  const cw=sp.W-sp.M[1]-sp.M[3],chMm=sp.H-sp.M[0]-sp.M[2],PX=96/25.4;
+  pr.setAttribute('style','display:block;position:absolute;left:-30000px;top:0;width:'+cw+'mm;background:#fff;font-family:"Times New Roman",Times,serif;color:#000;font-size:11px;z-index:-1');
+  await new Promise(r=>setTimeout(r,60));try{await document.fonts.ready}catch(e){}
+  const R0=pr.getBoundingClientRect(),total=Math.ceil(pr.scrollHeight),pageH=Math.floor(chMm*PX);
+  /* হাতে ভাগ করা পাতা (লেবেল ইত্যাদি) থাকলে সেই অনুযায়ী, নাহলে টেবিলের সারি না কেটে পাতা ভাগ */
+  const forced=[...pr.querySelectorAll('[style*="page-break-after:always"],[style*="page-break-after: always"],.pg')].filter(e=>!e.querySelector('[style*="page-break-after"]'));
+  let cuts=[];if(forced.length>1){let s=0;forced.forEach(e=>{const b=Math.ceil(e.getBoundingClientRect().bottom-R0.top);if(b>s+2){cuts.push([s,b]);s=b}});if(total>s+4)cuts.push([s,total])}
+  else{const bs=new Set(),kw=new Set();pr.querySelectorAll('.ph,h1,h2,h3,h4,tr.sech,tr.grp,thead tr').forEach(e=>kw.add(Math.round(e.getBoundingClientRect().bottom-R0.top)));
+   /* স্বাক্ষরের আগে শেষ সারির পরে কাটা যাবে না (স্বাক্ষর একা পরের পাতায় না যায়) — psig-এর আগের ঠিক জায়গাটা বাদ */
+   pr.querySelectorAll('.psig').forEach(e=>{const t=Math.round(e.getBoundingClientRect().top-R0.top);for(let d=-60;d<=0;d++)kw.add(t+d)});
+   pr.querySelectorAll('tr,.psig,.psum,.pinfo,.ph,p,h1,h2,h3,h4,li,img,:scope > div,:scope > table').forEach(e=>{const r=e.getBoundingClientRect(),b=Math.round(r.bottom-R0.top);if(!kw.has(b))bs.add(b)});const B=[...bs].filter(x=>x>0).sort((a,b)=>a-b);
+   /* পরের পাতায় টেবিল চলতে থাকলে কলামের হেডার (thead) আবার উপরে বসে */
+   const TB=[...pr.querySelectorAll('table')].map(t=>{const th=t.tHead,r=t.getBoundingClientRect();if(!th)return null;const hr=th.getBoundingClientRect();return{th,top:Math.round(r.top-R0.top),bot:Math.round(r.bottom-R0.top),hTop:Math.round(hr.top-R0.top),hh:Math.round(hr.height)}}).filter(x=>x&&x.hh>0&&x.hh<pageH/3);
+   let s=0;while(s<total-2){const T=TB.find(t=>s>t.hTop+t.hh-1&&s<t.bot-2),hh=T?T.hh:0;let lim=s+pageH-hh;if(lim>=total){cuts.push([s,total,T]);break}let e=0;for(const b of B){if(b<=lim&&b>s+pageH*0.35)e=b;if(b>lim)break}if(!e)e=lim;cuts.push([s,e,T]);s=e}}
+  const land=sp.W>sp.H,pdf=new jsPDF({unit:'mm',format:[Math.min(sp.W,sp.H),Math.max(sp.W,sp.H)],orientation:land?'landscape':'portrait',compress:true});
+  const ign=el=>el.id==='app'||el.id==='modal'||el.id==='dlg'||el.id==='pal'||el.id==='toast'||el.id==='login'||el.id==='pdfProg';
+  for(let i=0;i<cuts.length;i++){pdfProg(LG('PDF তৈরি হচ্ছে — পাতা ','Creating PDF — page ')+(i+1)+' / '+cuts.length);await new Promise(r=>setTimeout(r,0));
+   const [a,b,T]=cuts[i];if(i)pdf.addPage();let top=sp.M[0];
+   if(T){if(!T.img){const hc=await window.html2canvas(pr,{scale:2.2,backgroundColor:'#ffffff',useCORS:true,logging:false,y:R0.top+window.scrollY+T.hTop,height:T.hh,ignoreElements:ign});T.img=hc.toDataURL('image/jpeg',0.92);T.mm=hc.height/hc.width*cw;hc.width=hc.height=0}pdf.addImage(T.img,'JPEG',sp.M[3],top,cw,T.mm,undefined,'FAST');top+=T.mm}
+   const cv=await window.html2canvas(pr,{scale:2.2,backgroundColor:'#ffffff',useCORS:true,logging:false,y:R0.top+window.scrollY+a,height:Math.max(4,b-a),ignoreElements:ign});
+   const hMm=Math.min(chMm-(top-sp.M[0]),cv.height/cv.width*cw);pdf.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',sp.M[3],top,cw,hMm,undefined,'FAST');cv.width=cv.height=0;
+   if(sp.M[2]>=6&&cuts.length>0){pdf.setFont('helvetica','normal');pdf.setFontSize(7);pdf.setTextColor(80);pdf.text('Powered by AMAZ Production',sp.M[3],sp.H-sp.M[2]/2);pdf.text('Page '+(i+1)+' of '+cuts.length,sp.W-sp.M[1],sp.H-sp.M[2]/2,{align:'right'})}}
+  const vno=((pr.textContent||'').match(/\b(INV|TRF|GRN|PAY|MR|PO|SR|PHY|MFG|CNV|DMG)-\d+/)||[])[0]||'';const name=((vno&&!/day.?book|register|report|ledger|statement/i.test(title)?vno+'_':'')+title.replace(/[—–]/g,'-').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,'_').slice(0,70)||'AMAZ_Production')+'_'+today()+'.pdf',blob=pdf.output('blob');
+  const file=(typeof File==='function')?new File([blob],name,{type:'application/pdf'}):null,mobile=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent||'');
+  let shared=false;if(mobile&&file&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});shared=true}catch(e){if(e&&e.name==='AbortError')shared=true}}
+  if(!shared){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},3000)}
+  window._pdfLast={name,pages:cuts.length,size:blob.size};audit('PDF ডাউনলোড',name+' · '+cuts.length+' পাতা');sysSave();if(!shared)toast('✓ '+LG('PDF ডাউনলোড হয়েছে — ','PDF downloaded — ')+name)}
+ catch(e){errLog('PDF: '+(e&&e.message||e),e&&e.stack);toast('⚠️ '+LG('PDF তৈরিতে সমস্যা — প্রিন্ট ডায়ালগে "Save as PDF" বাছুন','Could not create the PDF — choose "Save as PDF" in the print dialog'),1);pr.setAttribute('style',old);setTimeout(()=>window.print(),300)}
+ finally{pr.setAttribute('style',old);pdfProg();_pdfBusy=false}}
+try{new MutationObserver(()=>{clearTimeout(window._pdfBT);window._pdfBT=setTimeout(()=>addPdfButtons(),40)}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+/* ডে বুক — আসল রিপোর্ট প্রিন্ট (আগে পুরো স্ক্রিন প্রিন্ট হতো / ফাঁকা পাতা আসত) */
+function dbkPrint(){const L=window._dbkRows||[],fD=DBK_MODE==='day'?DBK_DATE:DBK_FROM,tD=DBK_MODE==='day'?DBK_DATE:DBK_TO;let d=0,c=0;
+ const rows=L.map((e,i)=>{d+=n(e.debit);c+=n(e.credit);return `<tr><td class="c">${i+1}</td><td>${fd(e.date)}</td><td>${esc(e.no)}</td><td>${esc(e.type)}</td><td>${esc(e.particulars)}</td><td>${esc(e.details)}</td><td class="r">${n(e.debit)>0?f2(e.debit):'-'}</td><td class="r">${n(e.credit)>0?f2(e.credit):'-'}</td></tr>`}).join('');
+ printHTML(hdr('Day Book',(fD===tD?'Date: '+fd(fD):'Period: '+fd(fD)+' to '+fd(tD))+(DBK_TYPE!=='all'?' | Type: '+DBK_TYPE:'')+(DBK_SEARCH?' | Search: '+esc(DBK_SEARCH):''))+`<table class="ptbl"><thead><tr><th>#</th><th>Date</th><th>Voucher No</th><th>Voucher Type</th><th>Particulars / Party</th><th>Details</th><th>Debit (Tk)</th><th>Credit (Tk)</th></tr></thead><tbody>${rows||'<tr><td colspan="8" class="c">No vouchers</td></tr>'}<tr class="grand"><td colspan="6" class="r">TOTAL (${L.length} vouchers)</td><td class="r">${f2(d)}</td><td class="r">${f2(c)}</td></tr></tbody></table>`+SIG(['Prepared By','Checked By','Approved By']),true)}
+
 /* ================= #12 ক্লাউড সিঙ্ক (একাধিক কম্পিউটার) — Google Apps Script ================= */
 function copyText(t,msg){const fb=()=>{try{const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();toast(ok?msg:'কপি করা গেল না — লেখাটা সিলেক্ট করে Ctrl+C চাপুন',!ok)}catch(e){toast('কপি করা গেল না — লেখাটা সিলেক্ট করে Ctrl+C চাপুন',1)}};try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>toast(msg),fb);else fb()}catch(e){fb()}}
 const SYNC_KEYS_OBJ=['labour','closings','plans'];const SYNC_NO=['reqs','pos','payments','invoices','receipts','transfers','scraps','convs','orders','phys'];
@@ -4524,6 +4590,7 @@ function vDayBook(){
     return true;
   });
 
+  window._dbkRows = filtered;
   // Calculate Totals
   const totDebit = filtered.reduce((a,x) => a + n(x.debit), 0);
   const totCredit = filtered.reduce((a,x) => a + n(x.credit), 0);
@@ -4551,7 +4618,7 @@ function vDayBook(){
         <button class="btn ${DBK_MODE==='range'?'pri':''}" onclick="DBK_MODE='range';if(!DBK_FROM)DBK_FROM=monthStart();vDayBook()" style="font-size:12px">
           📆 ${isEn ? 'Date Range' : 'তারিখের পরিসীমা'}
         </button>
-        <button class="btn" onclick="window.print()" style="font-size:12px">
+        <button class="btn" onclick="dbkPrint()" style="font-size:12px">
           🖨️ ${isEn ? 'Print' : 'প্রিন্ট'}
         </button>
       </div>
@@ -4925,15 +4992,15 @@ function dayBookPrint(kind, id){
   }else if(kind === 'purchase'){
     const p = (DB.purchases||[]).find(x => x.grn === id || x.id === id);
     if(p && p.grn) pvPrint(p.grn);
-    else window.print();
+    else toast('ভাউচার পাওয়া যায়নি',1);
   }else if(kind === 'sales'){
     const inv = (DB.invoices||[]).find(x => x.id === id);
     if(inv) printInv(inv.id);
-    else window.print();
+    else toast('ইনভয়েস পাওয়া যায়নি',1);
   }else if(kind === 'po'){
     printPO(id);
   }else{
-    window.print();
+    openDayBookModal(kind, id);
   }
 }
 
@@ -6318,7 +6385,7 @@ const VIEWS={dash:vDash,orders:vOrders,stdvar:vStdVar,convert:vConvert,labels:vL
  purchase:vPurchase,damage:()=>txView('damage'),sales:()=>txView('sales'),fgdmg:()=>txView('fgdmg'),
  store:vStore,fg:vFg,phys:vPhys,backup:vBackup,year:vYear,bin:vBin,license:vLicense};
 window.addEventListener('resize',pkClose);
-{const _wp=window.print.bind(window);window.print=function(){if(!canFeat('print')){toast('আপনার রোলে প্রিন্টের অনুমতি নেই',1);$('#print').innerHTML='';return}return _wp()}}
+{const _wp=window.print.bind(window);window.print=function(){if(!canFeat('print')){toast('আপনার রোলে প্রিন্টের অনুমতি নেই',1);$('#print').innerHTML='';_pdfNext=0;return}if(_pdfNext&&Date.now()-_pdfNext<120000){_pdfNext=0;pdfFromPrint();return}return _wp()}}
 try{new MutationObserver(()=>addExcelBtn()).observe($('#view'),{childList:true})}catch(e){}
 $('#modal').addEventListener('scroll',pkClose);
 window.addEventListener('afterprint',()=>{setTimeout(()=>{$('#print').innerHTML=''},300)});
