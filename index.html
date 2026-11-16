@@ -102,7 +102,17 @@ details .tbl{margin:0 0 6px}
 #picker div.on{background:var(--a2)}
 #picker .none{color:var(--mut);cursor:default}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;padding:10px 18px;border-radius:10px;opacity:0;transition:opacity .25s;z-index:99;pointer-events:none}
-#toast.show{opacity:1}#toast.err{background:var(--red)}
+#toast.show{opacity:1}#toast.err{background:var(--red)}#toast{display:none!important}
+.tst-stack{position:fixed;top:16px;right:16px;z-index:100000;display:flex;flex-direction:column;gap:10px;width:min(380px,calc(100vw - 32px));pointer-events:none}
+.tst{--tc:#0f766e;pointer-events:auto;position:relative;overflow:hidden;display:flex;align-items:flex-start;gap:12px;padding:13px 12px 14px 14px;border-radius:10px;background:#fff;color:#17201f;border:1px solid #dfe5e5;border-left:4px solid var(--tc);box-shadow:0 12px 28px rgba(16,24,40,.14),0 2px 6px rgba(16,24,40,.08);animation:tstIn .24s cubic-bezier(.22,.61,.36,1)}
+.tst.out{animation:tstOut .2s ease forwards}.tst-success{--tc:#047857}.tst-error{--tc:#cf222e}.tst-warning{--tc:#d97706}.tst-info{--tc:#0f766e}
+.tst-ic{flex:0 0 26px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--tc) 15%,transparent);color:var(--tc)}
+.tst-body{flex:1;min-width:0;padding-top:1px}.tst-title{font-size:13px;font-weight:700;line-height:1.3}.tst-msg{font-size:12.5px;line-height:1.45;margin-top:2px;color:#4d5b5a;word-wrap:break-word;white-space:pre-line}
+.tst-x{flex:0 0 auto;background:none;border:0;color:#8d9a9b;cursor:pointer;font-size:13px;line-height:1;padding:4px 5px;border-radius:6px;margin:-2px -2px 0 0}.tst-x:hover{background:rgba(16,24,40,.06);color:#17201f}
+.tst-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--tc);opacity:.55;transform-origin:left center}
+@keyframes tstIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}@keyframes tstOut{to{opacity:0;transform:translateX(24px)}}
+html.dark .tst{background:#141c1f;color:#e6eeee;border-color:#2a3739;border-left-color:var(--tc);box-shadow:0 12px 32px rgba(0,0,0,.45)}html.dark .tst-msg{color:#b3c0c1}html.dark .tst-x:hover{background:rgba(255,255,255,.08);color:#fff}html.dark .tst-success{--tc:#2ea043}html.dark .tst-error{--tc:#f85149}html.dark .tst-warning{--tc:#d29922}html.dark .tst-info{--tc:#2bb3a3}
+@media print{.tst-stack{display:none!important}}@media (prefers-reduced-motion:reduce){.tst,.tst.out{animation:none}}
 .help h4{color:var(--g);margin:14px 0 4px}.help li{margin:3px 0}
 .hint{font-size:12px;color:var(--mut);margin-top:6px}
 #print{display:none}
@@ -452,10 +462,11 @@ window.addEventListener('unhandledrejection',e=>{const r=e&&e.reason;const m=r&&
 try{new PerformanceObserver(l=>l.getEntries().forEach(x=>{if(x.duration>2500)errLog('অনেক সময় আটকে ছিল: '+Math.round(x.duration)+' ms','', 'slow')})).observe({entryTypes:['longtask']})}catch(e){}
 /* ================= কনফিগ ================= */
 const KEY='amazProd_v1';
-const APP_VER='3.9.3';
+const APP_VER='3.9.4';
 const SECTIONS=['Export','Morning','Ghorer Ponno','Depo'];
 const SEC_BN={'Export':'এক্সপোর্ট','Morning':'মর্নিং','Ghorer Ponno':'ঘরের পণ্য','Depo':'ডিপো'};
 const CHANGELOG=[
+ {v:'3.9.4',d:'2026-11-16',items:['নতুন নোটিফিকেশন (Worker Supply / Visa Renewal-এর মতো): উপরে ডানে — সফল (সবুজ ✓), ত্রুটি (লাল ✕), সতর্কতা (হলুদ !), বার্তা (টিল i); শিরোনাম, ✕ বাটন ও সময়ের বার; একাধিক হলে সাজানো (সর্বোচ্চ ৪), মাউস রাখলে থামে, একই মেসেজ বারবার জমে না']},
  {v:'3.9.3',d:'2026-11-16',items:['RM ও PM আইটেম লিস্ট, প্রোডাক্ট লিস্ট (এক সেকশন বা সব সেকশন) ও শ্রমিক তালিকায় প্রিন্ট ও ⬇️ PDF — সার্চ/ফিল্টার করা লিস্টই আসে; RM/PM-এ ওপেনিং, ক্রয়, কনজাম্পশন, ড্যামেজ, রিঅর্ডার লেভেল, ব্যালান্স ও স্টক ভ্যালু (English)']},
  {v:'3.9.2',d:'2026-11-16',items:[
   'সব প্রিন্টের পাশে ⬇️ PDF বাটন — রিপোর্ট, ভাউচার, ইনভয়েস, চালান, স্টেটমেন্ট, লেবেল সব; একই প্রিন্ট লেআউট সরাসরি PDF ফাইল (PC-তে ডাউনলোড, মোবাইলে WhatsApp/Email শেয়ার); টেবিলের সারি মাঝখান থেকে কাটে না; প্রতি পাতায় Page x of y',
@@ -765,7 +776,27 @@ const fp=v=>n(v).toFixed(1)+'%';
 const fd=d=>d?d.split('-').reverse().join('-'):'';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pn=v=>`<span class="${n(v)<0?'neg':'pos'}">${f0(v)}</span>`;
-function toast(m,err){const t=$('#toast');t.textContent=m;t.className='show'+(err?' err':'');clearTimeout(t._h);t._h=setTimeout(()=>t.className='',2600)}
+/* v3.9.4 — নোটিফিকেশন (Worker Supply / Visa Renewal-এর মতো): উপরে ডানে — সফল (সবুজ), ত্রুটি (লাল), সতর্কতা (হলুদ), বার্তা (টিল);
+   আইকন, শিরোনাম, ✕ বাটন, সময়ের বার; একাধিক হলে সাজানো (সর্বোচ্চ ৪), মাউস রাখলে থামে; একই মেসেজ আবার এলে নতুন না বানিয়ে সময় আবার শুরু */
+function toastType(m,err){const s=String(m).trim();if(/^(❌|⛔|🔒)/.test(s))return 'error';if(/^⚠️?/.test(s))return err?'warning':'warning';if(err)return 'error';
+ if(/^(✓|✔|✅|💾|🔓)/.test(s))return 'success';
+ if(/সতর্ক|অপেক্ষায়|বাকি|মাইনাস|লক|বাতিল হয়েছে|ইতিমধ্যে|আগেই|আগে থেকেই|already|pending|warning|cancel|locked|negative/i.test(s))return 'warning';
+ if(/হয়েছে|হলো|সফল|সম্পন্ন|অনুমোদিত|স্বাগতম|সেভ|যোগ|আপডেট|মুছে|ইমপোর্ট|এক্সপোর্ট|কপি|লোড|ডাউনলোড|পাঠানো|saved|added|updated|deleted|removed|imported|exported|copied|loaded|downloaded|created|done|complete|success|welcome|approved|restored|sent|set$/i.test(s))return 'success';
+ return 'info'}
+var TOAST_IC={success:'<path d="M20 6 9 17l-5-5"/>',error:'<path d="M18 6 6 18M6 6l12 12"/>',warning:'<path d="M12 8v5M12 16.5v.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',info:'<path d="M12 11v6M12 7.5v.01"/><circle cx="12" cy="12" r="10"/>'};
+function toast(m,err,type){m=String(m==null?'':m);if(!m.trim())return;const t0=$('#toast');if(t0)t0.textContent=m;
+ type=TOAST_IC[type]?type:toastType(m,err);const en=window.LANG==='en',TT={success:en?'Success':'সফল',error:en?'Error':'ত্রুটি',warning:en?'Warning':'সতর্কতা',info:en?'Notice':'বার্তা'};
+ let st=document.getElementById('tstStack');if(!st){st=document.createElement('div');st.id='tstStack';st.className='tst-stack';st.setAttribute('aria-live','polite');document.body.appendChild(st)}
+ const txt=m.replace(/^\s*(✅|❌|⚠️|⚠|✓|✔|ℹ️)\s*/,'');const same=[...st.children].find(el=>el._msg===txt&&!el.classList.contains('out'));if(same){same._restart();return}
+ const el=document.createElement('div');el.className='tst tst-'+type;el.setAttribute('role',type==='error'?'alert':'status');el._msg=txt;
+ const dur=type==='error'?6000:type==='warning'?4800:3400;let tm=0,left=dur,at=0;
+ el.innerHTML='<div class="tst-ic"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+TOAST_IC[type]+'</svg></div><div class="tst-body"><div class="tst-title">'+TT[type]+'</div><div class="tst-msg"></div></div><button type="button" class="tst-x" aria-label="Close" title="Close">✕</button><div class="tst-bar"></div>';
+ el.querySelector('.tst-msg').textContent=txt;const bar=el.querySelector('.tst-bar');
+ const close=()=>{if(el.classList.contains('out'))return;clearTimeout(tm);el.classList.add('out');setTimeout(()=>el.remove(),220)};
+ const run=()=>{at=Date.now();clearTimeout(tm);tm=setTimeout(close,left);bar.style.transition='none';bar.style.transform='scaleX('+(left/dur)+')';void bar.offsetWidth;bar.style.transition='transform '+left+'ms linear';bar.style.transform='scaleX(0)'};
+ const pause=()=>{clearTimeout(tm);left=Math.max(400,left-(Date.now()-at));const sc=getComputedStyle(bar).transform;bar.style.transition='none';bar.style.transform=sc==='none'?'scaleX(1)':sc};
+ el._restart=()=>{left=dur;run()};el.addEventListener('mouseenter',pause);el.addEventListener('mouseleave',run);el.querySelector('.tst-x').addEventListener('click',close);
+ st.prepend(el);while(st.children.length>4)st.lastElementChild.remove();run()}
 
 /* ================= ডাটা ================= */
 function blank(){return{settings:{company:'',address:'',factoryAddr:'',phone:'',email:'',logo:'',footer:'',openDate:today(),lastBackup:'',wDays:26,wHours:8,otMult:1},items:[],products:[],reqs:[],purchases:[],damages:[],sales:[],fgDamages:[],workers:[],labour:{},closings:{},users:[],audit:[],suppliers:[],pos:[],payments:[],customers:[],invoices:[],receipts:[],locations:[],transfers:[],plans:{},overheads:[],scraps:[],machines:[],breakdowns:[],conversions:[],convs:[],orders:[],bin:[],licenses:[],licDevices:[],phys:[],seq:{req:0}}}
