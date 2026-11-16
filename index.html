@@ -450,10 +450,14 @@ window.addEventListener('unhandledrejection',e=>{const r=e&&e.reason;const m=r&&
 try{new PerformanceObserver(l=>l.getEntries().forEach(x=>{if(x.duration>2500)errLog('অনেক সময় আটকে ছিল: '+Math.round(x.duration)+' ms','', 'slow')})).observe({entryTypes:['longtask']})}catch(e){}
 /* ================= কনফিগ ================= */
 const KEY='amazProd_v1';
-const APP_VER='3.9';
+const APP_VER='3.9.1';
 const SECTIONS=['Export','Morning','Ghorer Ponno','Depo'];
 const SEC_BN={'Export':'এক্সপোর্ট','Morning':'মর্নিং','Ghorer Ponno':'ঘরের পণ্য','Depo':'ডিপো'};
 const CHANGELOG=[
+ {v:'3.9.1',d:'2026-11-16',items:[
+  'অটো সিঙ্কের সময় কাজ ছেড়ে দেওয়া / স্ক্রিন লাফানো ঠিক: অন্য PC থেকে নতুন ডাটা এলে আপনি টাইপ/ক্লিক/স্ক্রল করার ৮ সেকেন্ড পর্যন্ত, পিকার খোলা থাকলে বা ফর্মে না-সেভ করা লেখা থাকলে পেজ বদলায় না; পরে রিফ্রেশ হলেও স্ক্রল পজিশন ও কার্সর একই জায়গায় থাকে, ফোকাস প্রথম ঘরে লাফায় না',
+  'উপরের "নতুন ডাটা এসেছে — রিফ্রেশ" চিপে চাপলে সাথে সাথে রিফ্রেশ'
+ ]},
  {v:'3.9',d:'2026-11-16',items:[
   'Visibility Control (Visa Renewal / Worker Supply-র মতো) — সেটিংস → 👁️ Visibility Control (শুধু অ্যাডমিন): যেকোনো মেনু/পেজ, সেটিংস ট্যাব, ফিচার/বাটন (Excel, প্রিন্ট, মুছা, Costing ইমপোর্ট, সারাংশ কার্ড, ভাষা, ডার্ক মোড, গাইড, ঘণ্টা, সার্চ, সিঙ্ক চিপ) ও ড্যাশবোর্ডের অংশ পুরোপুরি লুকানো যায় — ক্লায়েন্ট (অ্যাডমিন সহ) দেখবে না',
   'রোলের অনুমতি থেকে আলাদা; আলাদা পাসওয়ার্ড (সেট / বদল / মুছা), ভুলে গেলে অ্যাডমিন রিকভারি কী দিয়ে রিসেট; একবার আনলক করলে ঐ PC-তে ঐ অ্যাকাউন্টে অটোমেটিক; আনলক অবস্থায় উপরে 🔓 Visibility চিপ (চাপলে লক); Shortcut Ctrl + Shift + U; ক্লাউড সিঙ্কে সব PC-তে যায়; সব বদল অডিট লগে'
@@ -1211,7 +1215,7 @@ function dashFilter(){if(VIEW!=='dash')return;$$('#view [data-dk]').forEach(e=>{
 function afterRender(){try{dashFilter()}catch(e){}try{sumInject()}catch(e){}
  // টেবিলের ভেতরের অ্যাকশন বাটন Tab-এ বাদ — Tab শুধু ঘর থেকে ঘরে যাবে
  $$('#view table').forEach(tb=>{if(tb.querySelector('input'))tb.querySelectorAll('.btn').forEach(b=>b.tabIndex=-1)});
- const af=$('#view [data-af]');if(af&&!modalOpen()&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#view')&&document.activeElement.matches('input,select')))setTimeout(()=>{if(af.isConnected&&!modalOpen()&&$('#dlg').classList.contains('hidden')&&$('#pal').classList.contains('hidden'))af.focus()},30);
+ const af=$('#view [data-af]');if(af&&!SOFTR&&!modalOpen()&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#view')&&document.activeElement.matches('input,select')))setTimeout(()=>{if(af.isConnected&&!modalOpen()&&$('#dlg').classList.contains('hidden')&&$('#pal').classList.contains('hidden'))af.focus()},30);
  // ব্যাকআপ রিমাইন্ডার
  const has=DB.items.length+DB.products.length+DB.reqs.length>0,lb=DB.settings.lastBackup,days=lb?(Date.now()-new Date(lb).getTime())/864e5:999;
  $('#bkWarn').innerHTML=has&&days>7?`<button class="bkwarn" onclick="go('backup')" title="শেষ ব্যাকআপ: ${lb?fd(lb.slice(0,10)):'কখনো নেওয়া হয়নি'}">${ic('shield',14)} ${window.LANG==='en'?(lb?'No backup for '+Math.floor(days)+' days':'Take Backup'):(lb?Math.floor(days)+' দিন ব্যাকআপ নেই':'ব্যাকআপ নিন')}</button>`:''}
@@ -3887,14 +3891,23 @@ async function syPost(body){const c=syCfg();const ac=typeof AbortController!=='u
 function syStatus(st,msg){SY.state=st;if(msg!=null)SY.err=msg;const el=$('#syncChip');if(!el)return;if(!syOn()){el.innerHTML='';return}if(SY.pendingRender&&st!=='err')st='new';
  const m={ok:['ok','সিঙ্কড'+(SY.at?' · '+new Date(SY.at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'')],busy:['wait','সিঙ্ক হচ্ছে…'],pending:['wait','সিঙ্ক বাকি'],err:['bad','সিঙ্ক সমস্যা — ক্লিক করুন'],new:['wait','নতুন ডাটা এসেছে — রিফ্রেশ'],offline:['wait','অফলাইন — ডাটা এই PC-তে সেভ আছে']}[st]||['wait',''];
  const tip={ok:'সব ডাটা ক্লাউডের সাথে মিলে আছে। ক্লিক = এখনই সিঙ্ক',err:SY.err||'',new:'অন্য কম্পিউটার থেকে নতুন ডাটা এসেছে। আপনার লেখা নষ্ট না করতে পেজ নিজে থেকে বদলায়নি — ক্লিক করলে রিফ্রেশ হবে',offline:'ইন্টারনেট নেই। কাজ চালিয়ে যান — নেট এলে নিজে থেকেই সিঙ্ক হবে',pending:'কয়েক সেকেন্ডে সিঙ্ক হবে',busy:'সিঙ্ক চলছে — কাজ চালিয়ে যেতে পারেন'}[st]||'';
- el.innerHTML=`<button class="bkwarn" style="background:${st==='ok'?'var(--g3)':st==='err'?'var(--red2)':''};border-color:${st==='ok'?'#6ee7b7':st==='err'?'#fca5a5':''};color:${st==='ok'?'var(--g)':st==='err'?'var(--red)':''}" onclick="${st==='new'?'syApplyRender()':'syncNow(true)'}" title="${esc(tip)}">${ic('cloud',14)} ${m[1]}</button>`}
+ el.innerHTML=`<button class="bkwarn" style="background:${st==='ok'?'var(--g3)':st==='err'?'var(--red2)':''};border-color:${st==='ok'?'#6ee7b7':st==='err'?'#fca5a5':''};color:${st==='ok'?'var(--g)':st==='err'?'var(--red)':''}" onclick="${st==='new'?'syApplyRender(1)':'syncNow(true)'}" title="${esc(tip)}">${ic('cloud',14)} ${m[1]}</button>`}
 function syncSchedule(){if(!syOn()||SY.applying)return;if(SY.busy){SY.again=true;return}syStatus('pending');clearTimeout(SY.timer);SY.timer=setTimeout(()=>syncNow(false),4000)}
 const syDlgOpen=()=>modalOpen()||!$('#dlg').classList.contains('hidden');
 /* ডায়ালগ/পপআপ খোলা বা লগইন না করা অবস্থায় ডাটা বদলানো হয় না */
 const syBlocked=()=>syDlgOpen()||(DB.users.length>0&&!CUR);
-function syUserBusy(){const a=document.activeElement;return syDlgOpen()||VDIRTY||!!(a&&a.closest&&a.closest('#view')&&a.matches('input,select,textarea'))||!!(RQ&&RQ.dirty)||!!(LB&&LB.dirty)}
-function syApplyRender(){SY.pendingRender=false;authCheck();renderNav();renderView();syStatus(SY.state==='new'?'ok':SY.state)}
-function syDone(changed,manual){SY.busy=false;SY.bigOK=false;if(changed){if(syUserBusy()){SY.pendingRender=true;syStatus('new')}else{SY.pendingRender=false;authCheck();renderNav();renderView();syStatus('ok','')}}else syStatus('ok','');
+function syUserBusy(){const a=document.activeElement;return syDlgOpen()||VDIRTY||Date.now()-LASTACT<8000||!!(PK&&PK.open)||[IVD,TRD,PH,PV,MFG,ORD,CM,CP,GRP].some(d=>d&&d.dirty)||!!(RQ&&RQ.dirty)||!!(LB&&LB.dirty)}
+/* v3.9.1 — ব্যাকগ্রাউন্ডে (অটো সিঙ্ক / অন্য ট্যাব / লাইসেন্স) নতুন ডাটা এলে পেজ "নরমভাবে" রিফ্রেশ:
+   ইউজার শেষ ৮ সেকেন্ডে কিছু টাইপ/ক্লিক/স্ক্রল করলে, পিকার খোলা থাকলে বা ফর্মে না-সেভ করা লেখা থাকলে অপেক্ষা করে;
+   রিফ্রেশের সময় স্ক্রল পজিশন ও কার্সর যেখানে ছিল সেখানেই থাকে, অটো-ফোকাস লাফায় না। */
+var SOFTR=false,LASTACT=0;
+['keydown','mousedown','input','wheel','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,e=>{if(ev==='scroll'&&!(e.target===document||(e.target&&e.target.id==='view')))return;LASTACT=Date.now()},{capture:true,passive:true}));
+function syApplyRender(force){if(!force&&syUserBusy()){SY.pendingRender=true;syStatus('new');return}SY.pendingRender=false;
+ const v=$('#view'),sy=v?v.scrollTop:0,wy=window.scrollY,a=document.activeElement,els=()=>v?[...v.querySelectorAll('input,select,textarea,button,a[href],[tabindex]')]:[];const fi=a&&v&&v.contains(a)?els().indexOf(a):-1;let ss=null;try{if(fi>=0&&a.selectionStart!=null)ss=[a.selectionStart,a.selectionEnd]}catch(e){}
+ SOFTR=true;try{authCheck();renderNav();renderView()}finally{SOFTR=false}
+ const back=()=>{if(v)v.scrollTop=sy;if(window.scrollY!==wy)window.scrollTo(0,wy)};back();if(fi>=0){const e=els()[fi];if(e)try{e.focus({preventScroll:true});if(ss&&e.setSelectionRange)e.setSelectionRange(ss[0],ss[1])}catch(_){}}setTimeout(back,0);requestAnimationFrame(back);
+ syStatus(SY.state==='new'?'ok':SY.state)}
+function syDone(changed,manual){SY.busy=false;SY.bigOK=false;if(changed){SY.state='ok';SY.err='';syApplyRender()}else syStatus('ok','');
  if(manual)toast('সিঙ্ক সম্পন্ন'+(changed?' — অন্য কম্পিউটারের পরিবর্তন এসেছে':''));if(SY.again){SY.again=false;syncSchedule()}return true}
 async function syncNow(manual,mode){if(!syOn()){if(manual)toast('আগে ক্লাউড সিঙ্ক সেটআপ করুন (ব্যাকআপ ও সেটিংস)',1);return false}
  if(SY.busy){SY.again=true;if(manual)toast('সিঙ্ক চলছে…');return false}
@@ -3940,7 +3953,7 @@ function syStartPoll(){clearInterval(SY.poll);if(syOn())SY.poll=setInterval(()=>
 const TABID=Math.random().toString(36).slice(2);let TABstale=false;
 function tabTick(){try{localStorage.setItem(KEY+'_tick',TABID+':'+Date.now())}catch(e){}}
 async function tabReload(){if(!TABstale)return;if(syDlgOpen()||SY.busy){setTimeout(tabReload,1500);return}TABstale=false;const v=IDB.db?await idbGet():localStorage.getItem(KEY);if(!v||v===LAST)return;
- try{const d=JSON.parse(v);if(!d||!Array.isArray(d.items))return;DB=norm(d);LAST=v;binSync();WACV++;syLoadMeta();SY.base=await syBaseGet();if(CUR)CUR=DB.users.find(u=>u.id===CUR.id)||CUR;if(syUserBusy())SY.pendingRender=true;else{authCheck();renderNav();renderView()}}catch(e){}}
+ try{const d=JSON.parse(v);if(!d||!Array.isArray(d.items))return;DB=norm(d);LAST=v;binSync();WACV++;syLoadMeta();SY.base=await syBaseGet();if(CUR)CUR=DB.users.find(u=>u.id===CUR.id)||CUR;syApplyRender()}catch(e){}}
 window.addEventListener('storage',e=>{if(e.key===KEY+'_tick'&&e.newValue&&e.newValue.indexOf(TABID+':')!==0){TABstale=true;setTimeout(tabReload,500)}});
 const GAS_CODE=`// AMAZ Production — Cloud Sync (Google Apps Script)
 // ১. script.google.com → New project → এই কোড পুরোটা পেস্ট করুন
@@ -5721,7 +5734,7 @@ async function licRefresh(){try{const td=today();let dirty=false;if(!Array.isArr
     const cut=_dAdd(td,-LIC_DEV_ACTIVE_DAYS),act=DL.filter(x=>x&&!x.del&&String(x.seen||'')>=cut).sort((a,b)=>String(a.at).localeCompare(String(b.at)));L.devices=act.length;
     const ix=act.findIndex(x=>x.id===me);if(mine.del||ix<0||ix>=L.pcs){if(L.status==='ok'||L.status==='grace')L.status='pclimit'}}}
   const prev=JSON.stringify([_lic.status,_lic.exp,_lic.left,_lic.devices,_lic.client]);_lic=L;if(dirty)sysSave();
-  if(prev!==JSON.stringify([L.status,L.exp,L.left,L.devices,L.client])){authCheck();renderNav();if(!VDIRTY&&!modalOpen())renderView()}}
+  if(prev!==JSON.stringify([L.status,L.exp,L.left,L.devices,L.client])){authCheck();renderNav();if(!syUserBusy())syApplyRender()}}
  catch(e){_lic={status:'trial',left:LIC_TRIAL_DAYS}}licBanDraw();if(licRO()&&CUR&&!_licBillShown){_licBillShown=true;setTimeout(()=>{if(!modalOpen())openLicBill()},700)}return _lic}
 function licMsg(){const L=_lic||{};
  const EN=window.LANG==='en';if(L.status==='trialover')return EN?'⛔ Trial over — software is now READ-ONLY: view, print, Excel and backup work; new entries are blocked. Contact the vendor for a License key.':'⛔ Trial শেষ — সফটওয়্যার এখন শুধু দেখার জন্য (READ-ONLY): দেখা, প্রিন্ট, Excel, ব্যাকআপ চলবে; নতুন এন্ট্রি বন্ধ। License key নিতে vendor-এর সাথে যোগাযোগ করুন।';
