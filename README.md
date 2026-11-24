@@ -1,4 +1,4 @@
-# AMAZ Production v3.9.4
+# AMAZ Production v3.9.5
 
 ফ্যাক্টরির প্রোডাকশন, স্টোর (RM/PM), FG, বিক্রয় ও কস্টিং হিসাবের সফটওয়্যার — **AMAZ ERP Solution**।
 

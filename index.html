@@ -462,10 +462,11 @@ window.addEventListener('unhandledrejection',e=>{const r=e&&e.reason;const m=r&&
 try{new PerformanceObserver(l=>l.getEntries().forEach(x=>{if(x.duration>2500)errLog('অনেক সময় আটকে ছিল: '+Math.round(x.duration)+' ms','', 'slow')})).observe({entryTypes:['longtask']})}catch(e){}
 /* ================= কনফিগ ================= */
 const KEY='amazProd_v1';
-const APP_VER='3.9.4';
+const APP_VER='3.9.5';
 const SECTIONS=['Export','Morning','Ghorer Ponno','Depo'];
 const SEC_BN={'Export':'এক্সপোর্ট','Morning':'মর্নিং','Ghorer Ponno':'ঘরের পণ্য','Depo':'ডিপো'};
 const CHANGELOG=[
+ {v:'3.9.5',d:'2026-11-24',items:['অফলাইন ঠিক: GitHub থেকে ইনস্টল করা অ্যাপ একবার ইন্টারনেট সহ খোলার পর ইন্টারনেট ছাড়াও সবসময় খোলে ("This site can\'t be reached / ERR_FAILED" আর আসবে না); কোনো আইকন না পেলেও অ্যাপ সেভ হয়; পুরনো ভার্সনের ক্যাশ থেকেও খোলে; PDF লাইব্রেরি একবার নামলে অফলাইনেও PDF হয়']},
  {v:'3.9.4',d:'2026-11-16',items:['নতুন নোটিফিকেশন (Worker Supply / Visa Renewal-এর মতো): উপরে ডানে — সফল (সবুজ ✓), ত্রুটি (লাল ✕), সতর্কতা (হলুদ !), বার্তা (টিল i); শিরোনাম, ✕ বাটন ও সময়ের বার; একাধিক হলে সাজানো (সর্বোচ্চ ৪), মাউস রাখলে থামে, একই মেসেজ বারবার জমে না']},
  {v:'3.9.3',d:'2026-11-16',items:['RM ও PM আইটেম লিস্ট, প্রোডাক্ট লিস্ট (এক সেকশন বা সব সেকশন) ও শ্রমিক তালিকায় প্রিন্ট ও ⬇️ PDF — সার্চ/ফিল্টার করা লিস্টই আসে; RM/PM-এ ওপেনিং, ক্রয়, কনজাম্পশন, ড্যামেজ, রিঅর্ডার লেভেল, ব্যালান্স ও স্টক ভ্যালু (English)']},
  {v:'3.9.2',d:'2026-11-16',items:[
